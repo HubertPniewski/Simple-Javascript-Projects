@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quadratic function drawer</title>
+
+    <style>
+      body {
+        background-color: rgb(68, 68, 68);
+      }
+
+      .frame {
+        background-color: rgb(255, 255, 255);
+        position: fixed;
+        left: 20px;
+        top: 20px;
+        height: 600px;
+        width: 600px;
+        border: none;
+      }
+
+      .controls-container {
+        position: fixed;
+        left: 660px;
+        top: 30px;
+        width: 800px;
+        height: 200px;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .draw-button {
+        height: 50px;
+        background-color: green;
+        width: 100px;
+        border: none;
+        color: white;
+        font-size: 25px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      .draw-button:hover {
+        opacity: 0.7;
+      }
+      .draw-button:active {
+        opacity: 0.4;
+      }
+
+      .calculate-button {
+        height: 50px;
+        background-color: rgb(231, 0, 0);
+        width: 250px;
+        border: none;
+        color: white;
+        font-size: 25px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-left: 20px;
+      }
+      .calculate-button:hover {
+        opacity: 0.7;
+      }
+      .calculate-button:active {
+        opacity: 0.4;
+      }
+
+      .drawing-dot {
+        width: 3px;
+        height: 3px;
+        position: fixed;
+        background-color: rgb(199, 0, 0);
+        top: 20px;
+        left: 20px;
+      }
+
+      .xAxis {
+        width: 600px;
+        height: 1px;
+        position: fixed;
+        background-color: rgb(0, 94, 201);
+        top: 320px;
+        left: 20px;
+      }
+      .yAxis {
+        width: 1px;
+        height: 600px;
+        position: fixed;
+        background-color: rgb(0, 94, 201);
+        top: 20px;
+        left: 320px;
+      }
+
+      .xGrid {
+        width: 600px;
+        height: 1px;
+        position: fixed;
+        background-color: rgb(0, 119, 255);
+        top: 20px;
+        left: 20px;
+        opacity: 0.2;
+        z-index: 10;
+      }
+      .yGrid {
+        width: 1px;
+        height: 600px;
+        position: fixed;
+        background-color: rgb(3, 121, 255);
+        top: 20px;
+        left: 20px;
+        opacity: 0.2;
+        z-index: 10;
+      }
+
+      .xScale {
+        width: 15px;
+        height: 15px;
+        position: fixed;
+        color: black;
+        font-size: 8px;
+        top: 325px;
+        left: 20px;
+        z-index: 13;
+      }
+      .yScale {
+        width: 15px;
+        height: 15px;
+        position: fixed;
+        color: black;
+        font-size: 8px;
+        top: 20px;
+        left: 308px;
+        z-index: 13;
+      }
+
+      .xMarking {
+        position: fixed;
+        color: black;
+        font-size: 18px;
+        top: 300px;
+        left: 605px;
+        z-index: 13;
+        font-weight: 700;
+      }
+      .yMarking {
+        position: fixed;
+        color: black;
+        font-size: 18px;
+        top: 18px;
+        left: 325px;
+        z-index: 13;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame" id="frame">
+      <div class="xAxis"></div>
+      <div class="yAxis"></div>   
+    </div>
+
+    <div class="controls-container">
+      <h2>
+        Use Ctrl + mouse scroll to zoom up or down
+      </h2>
+      <h2>Enter properties</h2>
+      <form id="propertiesForm">
+        <label for="coefficientA">Coefficient a: </label>
+        <input type="number" value="0" id="coefficientA" 
+        name="coefficientA" step="any" required>
+        <br><br>
+      
+        <label for="coefficientB">Coefficient b: </label>
+        <input type="number" value="0" id="coefficientB" 
+        name="coefficientB" step="any" required>
+        <br><br>
+        
+        <label for="coefficientC">Coefficient c: </label>
+        <input type="number" value="0" id="coefficientC" 
+        name="coefficientC" step="any" required>
+        <br><br>
+      </form>
+
+      <button class="draw-button" id="draw-button">
+        Draw
+      </button>
+      <button class="calculate-button" id="calculate-button">
+        Calculate zeroes
+      </button>
+
+      <div id="zeroes-display"></div>
+      
+    </div>
+    
+  </body>
+  <script>
+    document.getElementById('draw-button').
+    addEventListener('click', function() {
+      const coefficientA = parseFloat(document.getElementById('coefficientA').value);
+      const coefficientB = parseFloat(document.getElementById('coefficientB').value);
+      const coefficientC = parseFloat(document.getElementById('coefficientC').value);
+
+      console.log(coefficientA, coefficientB, coefficientC);
+
+      let frameHTML = `
+      <div class="xAxis"></div>
+      <div class="yAxis"></div>
+      <div class="xMarking">x</div>
+      <div class="yMarking">y</div>
+      `;
+
+      for (let i = 1; i < 601; i++) {
+        const functionValue = ((coefficientA * ((i - 300) * (i - 300))) / 20 + coefficientB * (i - 300) + coefficientC * 20);
+
+        if (functionValue < 300 && functionValue > -300) { 
+        frameHTML += `
+        <div style="margin-left: ${i-1}px; margin-top: ${300-functionValue}px; z-index: 20;"
+        class="drawing-dot"></div>
+        `;
+        }
+      }
+
+      let gridHTML = '';
+      for (let i = 0; i < 30; i++) {
+        gridHTML += `
+          <div style="margin-top: ${i * 20}px;" class="xGrid"></div>
+          <div style="margin-left: ${i * 20}px;" class="yGrid"></div>
+          <div style="margin-left: ${(i * 20) - 2}px" class="xScale">${i - 15}</div>
+          <div style="margin-top: ${(i * 20) -4}px" class="yScale">${(i - 15) * -1}</div>
+        `;
+      }
+
+      document.getElementById('frame').innerHTML = frameHTML + gridHTML;
+    });
+
+    document.getElementById('calculate-button')
+    .addEventListener('click', function() {
+      const coefficientA = parseFloat(document.getElementById('coefficientA').value);
+      const coefficientB = parseFloat(document.getElementById('coefficientB').value);
+      const coefficientC = parseFloat(document.getElementById('coefficientC').value);
+
+      let zeroesHTML = '<h2> Zeroes for the entered parameters: <h2>';
+
+      if (coefficientA !== 0) {
+        const discriminant = coefficientB * coefficientB - 4 * coefficientA * coefficientC;
+        if (discriminant > 0) {
+          zeroesHTML += `
+            <h2>x<sub>1</sub> = ${((coefficientB * -1) - Math.sqrt(discriminant)) / (2 * coefficientA)}</h2>
+            <h2>x<sub>2</sub> = ${((coefficientB * -1) + Math.sqrt(discriminant)) / (2 * coefficientA)}</h2>
+          `;
+        }
+        else if (discriminant === 0) {
+          zeroesHTML += `
+            <h2>x = ${(coefficientB * -1) / (2 * coefficientA)}</h2>
+          `;
+        }
+        else {
+          zeroesHTML += `
+            <h2>The function doesn't have any zeroes.</h2>
+          `;
+        }
+      } else if (coefficientB !== 0) {
+        zeroesHTML += `
+            <h2>x = ${(coefficientC * -1) / coefficientB}</h2>
+          `;
+      } else {
+        if (coefficientC === 0) {
+          zeroesHTML += `
+            <h2>x &#8712; R</h2>
+          `;
+        } else {
+          zeroesHTML += `
+            <h2>The function doesn't have any zeroes.</h2>
+          `;
+        }
+      }
+
+      document.getElementById('zeroes-display').innerHTML = zeroesHTML;
+    });
+    
+  </script>
+</html>
