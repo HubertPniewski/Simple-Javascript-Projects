@@ -1,4 +1,4 @@
-### Simple quadratic function drawer
+# Simple quadratic function drawer
 
 A simple HTML & JS app for drawing a quadratic functions charts and zeros calculate.
 
